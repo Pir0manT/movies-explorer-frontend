@@ -1,0 +1,22 @@
+.burger-button {
+  display: none;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  background: transparent url('../../../images/icon-menu.svg') center center / cover no-repeat;
+  transition: opacity .3s linear;
+}
+
+.burger-button:hover {
+  opacity: .6;
+}
+
+@media screen and (max-width: 860px) {
+  .burger-button {
+    display: block;
+  }
+}

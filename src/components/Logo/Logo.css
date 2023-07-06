@@ -1,0 +1,12 @@
+.logo__link {
+  display: flex;
+}
+
+.logo__image {
+  transition: opacity .3s linear;
+}
+
+.logo__image:hover {
+  opacity: .6;
+  cursor: pointer;
+}

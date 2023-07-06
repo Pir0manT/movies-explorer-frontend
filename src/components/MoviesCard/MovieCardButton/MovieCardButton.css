@@ -1,0 +1,21 @@
+.movie-card__button {
+  width: 16px;
+  height: 18px;
+  border: 0;
+  cursor: pointer;
+  transition: all .3s ease-in-out;
+  background: #f9f9f9 url(../../../images/movie-check-off.svg)  center  no-repeat;
+
+}
+
+.movie-card__button_delete {
+  background: #f9f9f9 url(../../../images/movie-del.svg) center  no-repeat;
+}
+
+.movie-card__button_favorite {
+  background: #f9f9f9 url(../../../images/movie-check-on.svg) center  no-repeat;
+}
+
+.movie-card__button:hover {
+  opacity: .8;
+}

@@ -1,0 +1,14 @@
+.portfolio__list {
+  padding: 0;
+  margin: 50px 0 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media screen and (max-width: 480px) {
+  .portfolio__list {
+    margin-top: 42px;
+  }
+}

@@ -1,73 +1,55 @@
-import './Login.css'
+import { useNavigate } from 'react-router-dom'
+import { useRef, useState } from 'react'
+import { useUserMoviesContext } from '../../contexts/UserMoviesContext'
 import Logo from '../Logo/Logo'
-import { Link } from 'react-router-dom'
-import { useInput } from '../../hooks/input.hook'
+import LoginForm from './LoginForm'
+import './Login.css'
+import mainApi from '../../utils/MainApi'
 
-const Login = ({ onLogin }) => {
-  const email = useInput('', { isEmail: true })
-  const password = useInput('')
-
-  const defaultClassName = 'auth__input'
-  const errorClassName = 'auth__input auth__input_type_error'
+const Login = () => {
+  const [isLoading, setIsLoading] = useState(false)
+  const apiErrorMessage = useRef(false)
+  const { setCurrentUser } = useUserMoviesContext()
+  const navigate = useNavigate()
 
   const handleSubmit = (evt) => {
     evt.preventDefault()
-    onLogin()
+    if (apiErrorMessage.current) {
+      apiErrorMessage.current.textContent = ''
+    }
+    setIsLoading(true)
+    const formData = new FormData(evt.target)
+    const userData = {
+      email: formData.get('email'),
+      password: formData.get('password'),
+    }
+    mainApi
+      .signin(userData)
+      .then(() => {
+        evt.target.reset()
+        return mainApi.getCurrentUser()
+      })
+      .then((user) => {
+        setCurrentUser({ name: user.name, email: user.email })
+        navigate('/movies', { replace: true })
+      })
+      .catch((err) => {
+        if (apiErrorMessage) {
+          apiErrorMessage.current.textContent = err
+        }
+      })
+      .finally(() => setIsLoading(false))
   }
 
   return (
-    <main className="auth container">
+    <main className="login container">
       <Logo />
-      <h1 className="auth__title">Рады видеть!</h1>
-      <form action="#" className="auth__form" onSubmit={handleSubmit}>
-        <label htmlFor="email" className="auth__field">
-          E-mail
-          <input
-            type="email"
-            className={
-              !email.isValid.errorMessage ? defaultClassName : errorClassName
-            }
-            required
-            autoComplete="off"
-            placeholder="Email"
-            {...email}
-          />
-          <span className="auth__error">{email.isValid.errorMessage}</span>
-        </label>
-        <label htmlFor="password" className="auth__field">
-          Пароль
-          <input
-            type="password"
-            className={
-              !password.isValid.errorMessage ? defaultClassName : errorClassName
-            }
-            required
-            autoComplete="off"
-            placeholder="Пароль"
-            minLength="2"
-            maxLength="200"
-            {...password}
-          />
-          <span className="auth__error">{password.isValid.errorMessage}</span>
-        </label>
-        <button
-          className={
-            email.isValid.result && password.isValid.result
-              ? 'auth__submit'
-              : 'auth__submit auth__submit_disabled'
-          }
-          type="submit"
-          disabled={!email.isValid.result || !password.isValid.result}
-        >
-          Войти
-        </button>
-        <p className="auth__text">
-          Ещё не зарегистрированы?{' '}
-          <Link to="/signup" className="auth__link">
-            Регистрация
-          </Link>
-        </p>
-      </form>
+      <h1 className="login__title">Рады видеть!</h1>
+      <LoginForm
+        onSubmit={handleSubmit}
+        isLoading={isLoading}
+        apiErrorMessage={apiErrorMessage}
+      />
     </main>
   )
 }

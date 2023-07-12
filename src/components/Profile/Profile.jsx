@@ -1,100 +1,131 @@
-import { useState } from 'react';
-import './Profile.css';
+import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import './Profile.css'
+import { useUserMoviesContext } from '../../contexts/UserMoviesContext'
+import { useInput } from '../../hooks/input.hook'
+import { MESSAGE_API_PROFILE_SUCCESS } from '../../constants/constants'
+import mainApi from '../../utils/MainApi'
 
-const Profile = ({ onLogout }) => {
-  const [user, setUser] = useState({name: 'Виталий', email: 'user@mail.ru'});
+const Profile = () => {
+  const { currentUser, setCurrentUser } = useUserMoviesContext()
+  const name = useInput(currentUser.name, { isUserName: true })
+  const email = useInput(currentUser.email, { isEmail: true })
+  const apiMessage = useRef()
+  const navigate = useNavigate()
 
-  const [isEditing, setIsEditing] = useState(false);
+  useEffect(() => {
+    name.clearErrorMessage(true)
+    email.clearErrorMessage(true)
+  }, [])
 
-  const handleMakeEditable = () => {
-    setIsEditing(true);
+  const hasChanges = () => {
+    return currentUser.name !== name.value || currentUser.email !== email.value
   }
 
-  const handleChange = ({ target }) => {
-    const { name, value } = target;
-    setUser({...user, [name]: value});
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Profile edit form submitted');
-    setIsEditing(false);
+  const handleSubmit = (evt) => {
+    evt.preventDefault()
+    if (apiMessage.current) {
+      apiMessage.current.textContent = ''
+    }
+    const formData = new FormData(evt.target)
+    const userData = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+    }
+    mainApi
+      .editUserData(userData)
+      .then((user) => {
+        setCurrentUser({ name: user.name, email: user.email })
+        if (apiMessage.current) {
+          apiMessage.current.textContent = MESSAGE_API_PROFILE_SUCCESS
+        }
+      })
+      .catch((err) => {
+        if (apiMessage.current) {
+          apiMessage.current.textContent = err
+        }
+      })
   }
 
   const handleLogout = () => {
-    onLogout();
+    mainApi
+      .logoutUser()
+      .then(() => {
+        setCurrentUser({ name: '', email: '' })
+        localStorage.removeItem('search')
+        navigate('/', { replace: true })
+      })
+      .catch((err) => {
+        if (apiMessage.current) {
+          apiMessage.current.textContent = err
+        }
+      })
   }
 
   return (
     <main className="profile container">
-      <h1 className="profile__title">
-        {`Привет, ${user.name}!`}
-      </h1>
+      <h1 className="profile__title">{`Привет, ${currentUser.name}!`}</h1>
 
       <form
         name="profile__form"
         className="profile__form"
-        onSubmit={handleSubmit}>
+        onSubmit={handleSubmit}
+      >
         <label className="profile__input-container">
-          <span className="profile__input-label">
-            Имя
-          </span>
+          <span className="profile__input-label">Имя</span>
           <input
-            disabled={!isEditing}
             required
             type="text"
             name="name"
             className="profile__input"
             placeholder="Укажите имя"
-            value={user.name || ''}
-            onChange={handleChange}
+            value={name.value}
+            onChange={name.onChange}
+            onBlur={name.onBlur}
             minLength={2}
             maxLength={30}
           />
         </label>
+        <span className="profile__error">{name.isValid.errorMessage}</span>
         <label className="profile__input-container">
-          <span className="profile__input-label">
-            E-mail
-          </span>
+          <span className="profile__input-label">E-mail</span>
           <input
-            disabled={!isEditing}
             required
             type="email"
             name="email"
             className="profile__input"
             placeholder="Укажите почту"
-            value={user.email || ''}
-            onChange={handleChange}
+            value={email.value}
+            onBlur={email.onBlur}
+            onChange={email.onChange}
           />
         </label>
-        {
-          isEditing
-            ? <button
-                type="submit"
-                className="profile__submit"
-              >
-                Сохранить
-              </button>
-            : <div className="profile__buttons">
-                <button
-                  type="button"
-                  className="profile__button profile__button_type_edit"
-                  onClick={handleMakeEditable}
-                >
-                  Редактировать
-                </button>
-                <button
-                  type="button"
-                  className="profile__button profile__button_type_logout"
-                  onClick={handleLogout}
-                >
-                  Выйти из аккаунта
-                </button>
-              </div>
-        }
+
+        <span className="profile__error">{email.isValid.errorMessage}</span>
+
+        <span ref={apiMessage} className="profile__api-error" />
+
+        <div className="profile__buttons">
+          <button
+            type="submit"
+            className="profile__submit"
+            disabled={
+              !hasChanges() || !name.isValid.result || !email.isValid.result
+            }
+          >
+            Редактировать
+          </button>
+          <button
+            type="button"
+            className="profile__button profile__button_type_logout"
+            onClick={handleLogout}
+          >
+            Выйти из аккаунта
+          </button>
+        </div>
       </form>
     </main>
   )
-};
+}
 
-export default Profile;
+export default Profile

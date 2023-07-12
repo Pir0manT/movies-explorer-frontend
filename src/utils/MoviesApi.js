@@ -1,6 +1,6 @@
 import {
   BEATFILMS_URL,
-  MESSAGE_MOVIESAPI_GETFILMS_FAIL,
+  MESSAGE_MOVIES_API_GET_FILMS_FAIL,
 } from '../constants/constants'
 
 class MoviesApi {
@@ -12,7 +12,7 @@ class MoviesApi {
   _checkServerResponse = (res) => {
     return res.ok
       ? res.json()
-      : Promise.reject(`${res.status}: ${MESSAGE_MOVIESAPI_GETFILMS_FAIL}`)
+      : Promise.reject(`${res.status}: ${MESSAGE_MOVIES_API_GET_FILMS_FAIL}`)
   }
 
   _request(url, options) {

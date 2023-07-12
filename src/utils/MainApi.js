@@ -6,14 +6,18 @@ class MainApi {
     this._headers = headers
   }
 
-  _checkServerResponse = (res) => {
-    return res.ok
-      ? res.json()
-      : Promise.reject(
-          `Ошибка: ${res.status} ${
-            !!res.statusText ? 'Описание: ' + res.statusText : ''
-          }`
-        )
+  _checkServerResponse = async (res) => {
+    if (res.ok) {
+      return res.json()
+    } else {
+      const errorData = await res.json()
+      const errorMessage = errorData.message || ''
+      return Promise.reject(
+        `Ошибка: ${res.status} ${
+          errorMessage ? 'Описание: ' + errorMessage : ''
+        }`
+      )
+    }
   }
 
   _request(url, options) {
@@ -38,7 +42,7 @@ class MainApi {
     })
   }
 
-  reEnter = () => {
+  getCurrentUser = () => {
     return this._request(`${this._baseURL}/users/me`, {
       headers: this._headers,
     })
@@ -54,6 +58,7 @@ class MainApi {
 
   logoutUser = () => {
     return this._request(`${this._baseURL}/signout`, {
+      method: 'POST',
       headers: this._headers,
     })
   }
@@ -81,7 +86,7 @@ class MainApi {
 }
 
 const mainApi = new MainApi({
-  BASE_URL,
+  baseUrl: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },

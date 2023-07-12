@@ -1,12 +1,15 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext } from 'react'
 
-const SavedMoviesContext = createContext([]);
+const SavedMoviesContext = createContext([])
 
 export const SavedMoviesContextProvider = ({ children, ...props }) => {
-  return <SavedMoviesContext.Provider value={props.context}>{children}</SavedMoviesContext.Provider>;
-};
+  return (
+    <SavedMoviesContext.Provider value={props.context}>
+      {children}
+    </SavedMoviesContext.Provider>
+  )
+}
 
 export function useSavedMoviesContext() {
-  const context = useContext(SavedMoviesContext);
-  return context;
+  return useContext(SavedMoviesContext)
 }

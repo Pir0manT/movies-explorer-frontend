@@ -18,7 +18,10 @@
   justify-content: space-between;
   border: 0;
   border-bottom: solid 1px #E8E8E8;
+}
 
+.search__request:focus-within {
+  border-bottom-color: #4285f4;
 }
 
 .search__label {
@@ -70,6 +73,18 @@
 .search__submit:hover {
   opacity: .8;
 }
+
+.search__error-message {
+  min-height: 12px;
+  margin-bottom: 9px;
+  text-align: center;
+  font-style: normal;
+  font-weight: 400;
+  color: #FF3055;
+  font-size: 12px;
+  line-height: 1;
+}
+
 
 @media screen and (max-width: 900px) {
   .search {

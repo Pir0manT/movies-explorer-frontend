@@ -16,9 +16,7 @@ class MoviesApi {
   }
 
   _request(url, options) {
-    return fetch(url, { ...options, credentials: 'include' }).then(
-      this._checkServerResponse
-    )
+    return fetch(url, options).then(this._checkServerResponse)
   }
 
   getAllMovies = () => {
@@ -29,7 +27,7 @@ class MoviesApi {
 }
 
 const moviesApi = new MoviesApi({
-  BEATFILMS_URL,
+  baseUrl: BEATFILMS_URL,
   headers: {
     'Content-Type': 'application/json',
   },

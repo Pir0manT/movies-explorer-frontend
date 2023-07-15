@@ -113,7 +113,7 @@ const Profile = () => {
               !hasChanges() || !name.isValid.result || !email.isValid.result
             }
           >
-            Редактировать
+            Сохранить
           </button>
           <button
             type="button"

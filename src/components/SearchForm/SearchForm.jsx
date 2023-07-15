@@ -1,10 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox'
 import './SearchForm.css'
+import { MESSAGE_EMPTY_QUERY } from '../../constants/constants'
 
-const SearchForm = () => {
-  const [searchValue, setSearchValue] = useState('')
-  const [isShortsChecked, setIsShortsChecked] = useState(false)
+const SearchForm = ({
+  queryString,
+  isShortChecked,
+  isRequired = true,
+  isSearchDone,
+  handleSubmit,
+  handleShortsClick,
+}) => {
+  const [searchValue, setSearchValue] = useState(queryString)
+  const [isShortsChecked, setIsShortsChecked] = useState(isShortChecked)
 
   const handleChange = ({ target }) => {
     setSearchValue(target.value)
@@ -12,33 +20,31 @@ const SearchForm = () => {
 
   const handleShortsCheck = () => {
     setIsShortsChecked(!isShortsChecked)
-  }
-
-  const handleClick = (evt) => {
-    evt.preventDefault()
+    handleShortsClick()
   }
 
   return (
     <section className="search">
-      <form className="search__form">
+      <form className="search__form" onSubmit={handleSubmit} noValidate>
         <fieldset className="search__request">
-          {/*<div className="search__icon" />*/}
           <label className="search__label">
             <input
               className="search__input"
               type="text"
-              required
+              name="query"
+              required={isRequired}
               placeholder="Фильм"
               onChange={handleChange}
               value={searchValue}
             />
           </label>
-          <button
-            className="search__submit"
-            type="submit"
-            onClick={handleClick}
-          />
+          <button className="search__submit" type="submit" />
         </fieldset>
+        <span className="search__error-message">
+          {!searchValue && isSearchDone && isRequired
+            ? MESSAGE_EMPTY_QUERY
+            : ''}
+        </span>
         <FilterCheckbox
           checkHandler={handleShortsCheck}
           isChecked={isShortsChecked}

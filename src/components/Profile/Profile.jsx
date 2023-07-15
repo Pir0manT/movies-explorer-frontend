@@ -53,6 +53,7 @@ const Profile = () => {
       .then(() => {
         setCurrentUser({ name: '', email: '' })
         localStorage.removeItem('search')
+        localStorage.removeItem('foundMovies')
         navigate('/', { replace: true })
       })
       .catch((err) => {

@@ -62,3 +62,11 @@ Movies Explorer - это интерактивная SPA-страница, на �
 
 # Ссылки:
 - [Макет Дипломной работы в Figma](https://sf.top61.ru/f/d3df4486bd4c4e3eaf35/)
+- Frontend: https://movexp.top61.ru
+- Backend:
+  - Repository: https://github.com/Pir0manT/movies-explorer-api
+  - Website: https://api-movexp.top61.ru/
+
+IP: 95.31.196.116
+
+

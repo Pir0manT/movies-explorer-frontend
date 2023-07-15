@@ -70,5 +70,5 @@ Movies Explorer - это интерактивная SPA-страница, на �
   - Website: https://api-movexp.top61.ru/
 
 IP: 95.31.196.116
-
+- pull-request: https://github.com/Pir0manT/movies-explorer-frontend/pull/2
 

@@ -13,15 +13,6 @@ const convertDuration = (duration) => {
   return `${hours ? `${hours}ч` : ''} ${minutes ? `${minutes}м` : ''}`.trim()
 }
 
-const apiEmulator = (isFail = false) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (isFail) reject(new Error('ошибка api.'))
-      resolve('успех')
-    }, 500)
-  })
-}
-
 const getCardsAmount = () => {
   const screenWidth = window.innerWidth
   return screenWidth <= MOBILE_SCREEN_WIDTH
@@ -47,4 +38,4 @@ const movieFilter = (movie, { query, includeShorts }) =>
   checkMovieDuration(movie.duration, includeShorts) &&
   filterMovieByQuery(movie, query)
 
-export { convertDuration, apiEmulator, getCardsAmount, movieFilter }
+export { convertDuration, getCardsAmount, movieFilter }

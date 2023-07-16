@@ -1,5 +1,5 @@
 import './App.css'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import Layout from '../Layout/Layout'
 import Main from '../Main/Main'
@@ -18,7 +18,22 @@ import Preloader from '../Preloader/Preloader'
 const App = () => {
   const [currentUser, setCurrentUser] = useState({ name: '', email: '' })
   const [savedMovies, setSavedMovies] = useState([])
+  const [allMovies, setAllMovies] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const navigate = useNavigate()
+
+  const handleAuthError = (err) => {
+    try {
+      if (err.includes('401')) {
+        setCurrentUser({ name: '', email: '' })
+        localStorage.removeItem('search')
+        localStorage.removeItem('foundMovies')
+        navigate('/', { replace: true })
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   useEffect(() => {
     mainApi
@@ -70,7 +85,7 @@ const App = () => {
             element={
               <ProtectedRoute isLoggedIn={!!currentUser.email}>
                 <Header isLoggedIn={!!currentUser.email} />
-                <Profile />
+                <Profile handleAuthError={handleAuthError} />
               </ProtectedRoute>
             }
           />
@@ -79,7 +94,11 @@ const App = () => {
             element={
               <ProtectedRoute isLoggedIn={!!currentUser.email}>
                 <Layout isLoggedIn={!!currentUser.email}>
-                  <Movies />
+                  <Movies
+                    allMovies={allMovies}
+                    setAllMovies={setAllMovies}
+                    handleAuthError={handleAuthError}
+                  />
                 </Layout>
               </ProtectedRoute>
             }
@@ -89,7 +108,7 @@ const App = () => {
             element={
               <ProtectedRoute isLoggedIn={!!currentUser.email}>
                 <Layout isLoggedIn={!!currentUser.email}>
-                  <SavedMovies />
+                  <SavedMovies handleAuthError={handleAuthError} />
                 </Layout>
               </ProtectedRoute>
             }

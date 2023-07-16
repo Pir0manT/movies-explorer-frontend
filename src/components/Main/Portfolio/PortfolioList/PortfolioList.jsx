@@ -19,8 +19,8 @@ const projects = [
 const PortfolioList = () => {
   return (
     <ul className="portfolio__list">
-      {projects.map((project, index) => (
-        <PortfolioItem key={index} projectData={project} />
+      {projects.map((project) => (
+        <PortfolioItem key={project.title} projectData={project} />
       ))}
     </ul>
   )

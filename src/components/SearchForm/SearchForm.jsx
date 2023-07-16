@@ -1,13 +1,11 @@
 import { useState } from 'react'
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox'
 import './SearchForm.css'
-import { MESSAGE_EMPTY_QUERY } from '../../constants/constants'
 
 const SearchForm = ({
   queryString,
   isShortChecked,
-  isRequired = true,
-  isSearchDone,
+  searchErrorMessageRef,
   handleSubmit,
   handleShortsClick,
 }) => {
@@ -32,7 +30,6 @@ const SearchForm = ({
               className="search__input"
               type="text"
               name="query"
-              required={isRequired}
               placeholder="Фильм"
               onChange={handleChange}
               value={searchValue}
@@ -40,11 +37,7 @@ const SearchForm = ({
           </label>
           <button className="search__submit" type="submit" />
         </fieldset>
-        <span className="search__error-message">
-          {!searchValue && isSearchDone && isRequired
-            ? MESSAGE_EMPTY_QUERY
-            : ''}
-        </span>
+        <span className="search__error-message" ref={searchErrorMessageRef} />
         <FilterCheckbox
           checkHandler={handleShortsCheck}
           isChecked={isShortsChecked}

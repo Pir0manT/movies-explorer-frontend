@@ -7,7 +7,7 @@ export const BEATFILMS_URL = 'https://api.nomoreparties.co'
 export const MESSAGE_MOVIES_API_GET_FILMS_FAIL =
   'Не удалось получить данные фильмов'
 export const MOBILE_SCREEN_WIDTH = 600
-export const TABLET_SCREEN_WIDTH = 900
+export const TABLET_SCREEN_WIDTH = 1080
 export const DESKTOP_CARDS_AMOUNT = { totalCards: 12, extraCards: 4 }
 export const TABLET_CARDS_AMOUNT = { totalCards: 8, extraCards: 2 }
 export const MOBILE_CARDS_AMOUNT = { totalCards: 5, extraCards: 2 }

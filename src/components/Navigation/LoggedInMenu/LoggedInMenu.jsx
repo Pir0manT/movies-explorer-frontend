@@ -11,7 +11,7 @@ const LoggedInMenu = ({ isBurger = false }) => {
               to="/"
               className="navigation__link navigation__link_type_home"
             >
-              Гравная
+              Главная
             </NavLink>
           </li>
         )}

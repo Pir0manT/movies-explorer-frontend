@@ -1,7 +1,7 @@
 import MoviesCardList from '../MoviesCardList/MoviesCardList'
 import SearchForm from '../SearchForm/SearchForm'
 import './Movies.css'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Preloader from '../Preloader/Preloader'
 import Modal from '../Modal/Modal'
 import ModalContent from '../Modal/ModalContent'
@@ -10,8 +10,9 @@ import mainApi from '../../utils/MainApi'
 import moviesApi from '../../utils/MoviesApi'
 import { getCardsAmount, movieFilter } from '../../utils/utils'
 import { useDebouncedFunction } from '../../hooks/useDebouncedFunction'
+import { MESSAGE_EMPTY_QUERY } from '../../constants/constants'
 
-const Movies = () => {
+const Movies = ({ allMovies, setAllMovies, handleAuthError }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalText, setModalText] = useState('')
@@ -20,28 +21,41 @@ const Movies = () => {
     includeShorts: false,
     isSearchDone: false,
   })
+  const searchErrorMessageRef = useRef(false)
   const debouncedResize = useDebouncedFunction(handleResize)
   const [cardsAmount, setCardsAmount] = useState(getCardsAmount())
   const [moviesToDisplay, setMoviesToDisplay] = useState([])
   const [moviesFound, setMoviesFound] = useState([])
-  const [allMovies, setAllMovies] = useState([])
   const { setSavedMovies } = useUserMoviesContext()
 
   // Однократный эффект при монтировании /movies
   useEffect(() => {
     setIsLoading(true)
 
-    // Подтягиваем все фильмы из стороннего API
-    // и сохраненные фильмы из нашего API
-    moviesApi
-      .getAllMovies()
+    mainApi
+      .getSavedMovies()
       .then((movies) => {
-        setAllMovies(movies)
-        return mainApi.getSavedMovies()
+        setSavedMovies(movies)
+        if (allMovies.length === 0) {
+          return moviesApi.getAllMovies()
+        }
       })
-      .then((res) => {
-        setSavedMovies(res)
+      .then((movies) => {
+        if (movies) {
+          setAllMovies(movies)
+        }
+      })
+      .catch((err) => {
+        if (typeof err !== 'string') {
+          console.error(err)
+          return
+        }
 
+        setModalText(err)
+        setIsModalOpen(true)
+        handleAuthError(err)
+      })
+      .finally(() => {
         // Подтягиваем найденные предыдущем поиском фильмы
         const storedMovies = JSON.parse(localStorage.getItem('foundMovies'))
         if (storedMovies) setMoviesFound(storedMovies)
@@ -49,12 +63,7 @@ const Movies = () => {
         // Подтягиеваем данные предыдущего поиска
         const search = JSON.parse(localStorage.getItem('search'))
         if (search) setSearchParams(search)
-      })
-      .catch((err) => {
-        setModalText(err)
-        setIsModalOpen(true)
-      })
-      .finally(() => {
+
         setIsLoading(false)
       })
   }, [])
@@ -107,15 +116,21 @@ const Movies = () => {
     evt.preventDefault()
     const { query, shorts } = evt.target.elements
 
-    if (query.value) {
-      const newSearchParams = {
-        query: query.value,
-        includeShorts: shorts.checked,
-        isSearchDone: true,
+    if (!query.value) {
+      if (searchErrorMessageRef.current) {
+        searchErrorMessageRef.current.textContent = MESSAGE_EMPTY_QUERY
       }
-      localStorage.setItem('search', JSON.stringify(newSearchParams))
-      setSearchParams(newSearchParams)
+      return
     }
+    searchErrorMessageRef.current.textContent = ''
+
+    const newSearchParams = {
+      query: query.value,
+      includeShorts: shorts.checked,
+      isSearchDone: true,
+    }
+    localStorage.setItem('search', JSON.stringify(newSearchParams))
+    setSearchParams(newSearchParams)
   }
 
   const handleMoreMovies = () => {
@@ -141,7 +156,7 @@ const Movies = () => {
         <SearchForm
           queryString={searchParams.query}
           isShortChecked={searchParams.includeShorts}
-          isSearchDone={searchParams.isSearchDone}
+          searchErrorMessageRef={searchErrorMessageRef}
           handleSubmit={handleSearchSubmit}
           handleShortsClick={handleShortsClick}
         />

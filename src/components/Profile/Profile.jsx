@@ -6,7 +6,7 @@ import { useInput } from '../../hooks/input.hook'
 import { MESSAGE_API_PROFILE_SUCCESS } from '../../constants/constants'
 import mainApi from '../../utils/MainApi'
 
-const Profile = () => {
+const Profile = ({ handleAuthError }) => {
   const { currentUser, setCurrentUser } = useUserMoviesContext()
   const name = useInput(currentUser.name, { isUserName: true })
   const email = useInput(currentUser.email, { isEmail: true })
@@ -41,9 +41,15 @@ const Profile = () => {
         }
       })
       .catch((err) => {
+        if (typeof err !== 'string') {
+          console.error(err)
+          return
+        }
+
         if (apiMessage.current) {
           apiMessage.current.textContent = err
         }
+        handleAuthError(err)
       })
   }
 

@@ -9,7 +9,7 @@ import Modal from '../Modal/Modal'
 import ModalContent from '../Modal/ModalContent'
 import mainApi from '../../utils/MainApi'
 
-const SavedMovies = () => {
+const SavedMovies = ({ handleAuthError }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalText, setModalText] = useState('')
@@ -30,8 +30,14 @@ const SavedMovies = () => {
         setSavedMovies(movies)
       })
       .catch((err) => {
+        if (typeof err !== 'string') {
+          console.error(err)
+          return
+        }
+
         setModalText(err)
         setIsModalOpen(true)
+        handleAuthError(err)
       })
       .finally(() => {
         setIsLoading(false)
@@ -82,10 +88,8 @@ const SavedMovies = () => {
         <SearchForm
           queryString={searchParams.query}
           isShortChecked={searchParams.includeShorts}
-          isSearchDone={searchParams.isSearchDone}
           handleSubmit={handleSearchSubmit}
           handleShortsClick={handleShortsClick}
-          isRequired={false}
         />
       )}
       {isLoading ? (

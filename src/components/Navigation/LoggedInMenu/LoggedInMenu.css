@@ -10,17 +10,13 @@
 }
 
 .navigation__link {
-  font-weight: 500;
+  font-weight: 400;
   font-size: 13px;
   line-height: 1.38;
   color: inherit;
   text-decoration: none;
   cursor: pointer;
   transition: all .3s ease-in-out;
-}
-
-.navigation__link_type_saved-movies {
-  font-weight: 400;
 }
 
 .navigation__link_type_profile {
@@ -34,6 +30,10 @@
 
 .navigation__link:hover{
   opacity: .7;
+}
+
+.active {
+  font-weight: 500;
 }
 
 @media screen and (max-width: 860px) {

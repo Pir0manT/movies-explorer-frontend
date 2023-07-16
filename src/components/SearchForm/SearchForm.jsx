@@ -2,9 +2,15 @@ import { useState } from 'react'
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox'
 import './SearchForm.css'
 
-const SearchForm = () => {
-  const [searchValue, setSearchValue] = useState('')
-  const [isShortsChecked, setIsShortsChecked] = useState(false)
+const SearchForm = ({
+  queryString,
+  isShortChecked,
+  searchErrorMessageRef,
+  handleSubmit,
+  handleShortsClick,
+}) => {
+  const [searchValue, setSearchValue] = useState(queryString)
+  const [isShortsChecked, setIsShortsChecked] = useState(isShortChecked)
 
   const handleChange = ({ target }) => {
     setSearchValue(target.value)
@@ -12,33 +18,26 @@ const SearchForm = () => {
 
   const handleShortsCheck = () => {
     setIsShortsChecked(!isShortsChecked)
-  }
-
-  const handleClick = (evt) => {
-    evt.preventDefault()
+    handleShortsClick()
   }
 
   return (
     <section className="search">
-      <form className="search__form">
+      <form className="search__form" onSubmit={handleSubmit} noValidate>
         <fieldset className="search__request">
-          {/*<div className="search__icon" />*/}
           <label className="search__label">
             <input
               className="search__input"
               type="text"
-              required
+              name="query"
               placeholder="Фильм"
               onChange={handleChange}
               value={searchValue}
             />
           </label>
-          <button
-            className="search__submit"
-            type="submit"
-            onClick={handleClick}
-          />
+          <button className="search__submit" type="submit" />
         </fieldset>
+        <span className="search__error-message" ref={searchErrorMessageRef} />
         <FilterCheckbox
           checkHandler={handleShortsCheck}
           isChecked={isShortsChecked}

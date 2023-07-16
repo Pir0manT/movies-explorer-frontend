@@ -11,20 +11,25 @@ const LoggedInMenu = ({ isBurger = false }) => {
               to="/"
               className="navigation__link navigation__link_type_home"
             >
-              Гравная
+              Главная
             </NavLink>
           </li>
         )}
 
         <li className="navigation__item">
-          <NavLink to="/movies" className="navigation__link">
+          <NavLink
+            to="/movies"
+            className="navigation__link"
+            activeclassname="active"
+          >
             Фильмы
           </NavLink>
         </li>
         <li className="navigation__item">
           <NavLink
             to="/saved-movies"
-            className="navigation__link navigation__link_type_saved-movies"
+            className="navigation__link"
+            activeclassname="active"
           >
             Сохранённые фильмы
           </NavLink>

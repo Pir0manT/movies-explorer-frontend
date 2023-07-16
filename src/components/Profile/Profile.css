@@ -65,7 +65,7 @@
 }
 
 .profile__buttons {
-  margin: 201px auto 0;
+  margin: 290px auto 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -98,7 +98,7 @@
 .profile__submit {
   width: 100%;
   padding: 13px 0 15px;
-  margin: 198px auto 0;
+  margin: 0 auto 0;
   font-size: 14px;
   font-weight: 500;
   color: #fff;
@@ -109,13 +109,41 @@
   transition: opacity .3s ease-in-out;
 }
 
+.profile__submit:disabled {
+  /* Стили для состояния disabled */
+  background-color: #cccccc;
+  cursor: default;
+}
+
 .profile__submit:hover {
   opacity: .8;
 }
 
+.profile__error {
+  margin-bottom: 4px;
+  min-height: 10px;
+  font-style: normal;
+  font-weight: 400;
+  color: #FF3055;
+  font-size: 10px;
+  line-height: 1;
+  opacity: 1;
+  transition: 0.3s ease-in-out;
+}
+
+.profile__api-error {
+  margin: 50px 0 0;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: normal;
+  color: #FF3055;
+}
+
+
 @media screen and (max-width: 900px) {
   .profile {
-    padding: 230px 30px 269px;
+    padding: 120px 30px 50px;
   }
 
   .profile__form {
@@ -126,9 +154,6 @@
     margin-top: 192px;
   }
 
-  .profile__submit {
-    margin-top: 192px;
-  }
 }
 
 @media screen and (max-width: 600px) {
@@ -141,13 +166,10 @@
   }
 
   .profile__buttons {
-    margin-top: 360px;
+    margin-top: 160px;
     gap: 13px;
   }
 
-  .profile__submit {
-    margin-top: 360px;
-  }
 
   .profile__button {
     font-size: 12px;

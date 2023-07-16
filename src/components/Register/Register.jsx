@@ -1,103 +1,61 @@
-import { Link } from 'react-router-dom'
-import { useInput } from '../../hooks/input.hook'
+import { useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './Register.css'
 import Logo from '../Logo/Logo'
+import RegisterForm from './RegisterForm'
+import mainApi from '../../utils/MainApi'
+import { useUserMoviesContext } from '../../contexts/UserMoviesContext'
 
-const Register = ({ onRegister }) => {
-  const name = useInput('')
-  const email = useInput('', { isEmail: true })
-  const password = useInput('')
+const Register = () => {
+  const [isLoading, setIsLoading] = useState(false)
+  const apiErrorMessage = useRef(false)
+  const { setCurrentUser } = useUserMoviesContext()
+  const navigate = useNavigate()
 
-  const defaultClassName = 'register__input'
-  const errorClassName = 'register__input register__input_type_error'
-
-  const handleSubmit = (evt) => {
+  const handleSubmit = async (evt) => {
     evt.preventDefault()
-    onRegister()
+    if (apiErrorMessage.current) {
+      apiErrorMessage.current.textContent = ''
+    }
+    setIsLoading(true)
+    const formData = new FormData(evt.target)
+    const userData = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      password: formData.get('password'),
+    }
+    mainApi
+      .signup(userData)
+      .then((res) => {
+        // При успешной регистрации сразу авторизуем пользователя
+        return mainApi.signin({
+          email: userData.email,
+          password: userData.password,
+        })
+      })
+      .then((res) => {
+        evt.target.reset()
+        //....и переходим к фильмам
+        setCurrentUser({ name: userData.name, email: userData.email })
+        navigate('/movies', { replace: true })
+      })
+      .catch((err) => {
+        if (apiErrorMessage) {
+          apiErrorMessage.current.textContent = err
+        }
+      })
+      .finally(() => setIsLoading(false))
   }
 
   return (
     <main className="register container">
       <Logo />
       <h1 className="register__title">Добро пожаловать!</h1>
-      <form
-        action="#"
-        className="register__form"
-        name="register"
+      <RegisterForm
         onSubmit={handleSubmit}
-      >
-        <label htmlFor="name" className="register__field">
-          Имя
-          <input
-            type="text"
-            className={
-              !name.isValid.errorMessage ? defaultClassName : errorClassName
-            }
-            required
-            autoComplete="off"
-            placeholder="Имя"
-            minLength="2"
-            maxLength="40"
-            {...name}
-          />
-          <span className="register__error">{name.isValid.errorMessage}</span>
-        </label>
-        <label htmlFor="email" className="register__field">
-          E-mail
-          <input
-            type="email"
-            className={
-              !email.isValid.errorMessage ? defaultClassName : errorClassName
-            }
-            required
-            autoComplete="off"
-            placeholder="Email"
-            {...email}
-          />
-          <span className="register__error">{email.isValid.errorMessage}</span>
-        </label>
-        <label htmlFor="password" className="register__field">
-          Пароль
-          <input
-            type="password"
-            className={
-              !password.isValid.errorMessage ? defaultClassName : errorClassName
-            }
-            required
-            autoComplete="off"
-            placeholder="Пароль"
-            minLength="2"
-            maxLength="200"
-            {...password}
-          />
-          <span className="register__error">
-            {password.isValid.errorMessage}
-          </span>
-        </label>
-        <button
-          className={
-            name.isValid.result &&
-            email.isValid.result &&
-            password.isValid.result
-              ? 'register__submit'
-              : 'register__submit register__submit_disabled'
-          }
-          type="submit"
-          disabled={
-            !name.isValid.result ||
-            !email.isValid.result ||
-            !password.isValid.result
-          }
-        >
-          Зарегистрироваться
-        </button>
-        <p className="register__text">
-          Уже зарегистрированы?{' '}
-          <Link to="/signin" className="register__link">
-            Войти
-          </Link>
-        </p>
-      </form>
+        isLoading={isLoading}
+        apiErrorMessage={apiErrorMessage}
+      />
     </main>
   )
 }
